@@ -4,3 +4,8 @@
 # Required packages
 **Python == 3.7
 PyTorch == 1.6**
+# Dataset
+label(2248).csv   Drug Label Information
+smiles(2248).smlies    Drug smiles
+# Usage
+train.ipynb
