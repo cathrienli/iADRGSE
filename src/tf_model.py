@@ -13,43 +13,42 @@ from sklearn.model_selection import KFold
 data_fp = pd.read_csv('./data/fp(256).txt')
 y = pd.read_csv('./data/labels(2248).csv')
 data_att = np.load('./data/drugs_structure_attentivefp_ToxCast.npy')
-masking = np.load('./data/gin_supervised_masking.npy')
 infomax = np.load('./data/gin_supervised_infomax.npy')
 edge = np.load('./data/gin_supervised_edgepred.npy')
 con = np.load('./data/gin_supervised_contextpred.npy')
 
 
-#定义回调函数
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau#回调函数
-# # 定义回调函数：保存最优模型
+
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+
 checkpoint = ModelCheckpoint("./model/model.hdf5",
                              monitor="val_accuracy",
                              mode="max",
                              save_best_only = True,
                              save_weights_only=False,
                              verbose=1)
-# 定义回调函数：提前终止训练
+
 earlystop = EarlyStopping(monitor = 'val_loss',
                           min_delta = 0.0001,
                           patience = 40,
                           verbose = 3,
                           mode = 'min',
                           restore_best_weights = True)
-# 定义回调函数：学习率衰减
+
 reduce_lr = ReduceLROnPlateau(monitor = 'val_loss',
                               factor = 0.2,
                               patience = 10,
                               verbose = 3,
                               min_delta = 0.0001)
 
-# 将回调函数组织为回调列表
+
 callbacks = [earlystop,reduce_lr]
 
 
 
 
 
-#定义模型
+
 METRICS = [
       keras.metrics.BinaryAccuracy(name='accuracy',threshold=0.54),
       keras.metrics.Precision(name='precision'),
@@ -78,11 +77,11 @@ def create_model(metrics=METRICS):
 
 
 
-#训练、10折叠、在masking特征上进行训练
+
 
 
 results = []
-# 运行计时部分
+
 time_start = time.time()
 
 kfolder = KFold(n_splits=10, shuffle=True, random_state=2021)
@@ -146,6 +145,6 @@ print(f"-AUC score_std:{np.std(np.array(results)[:, [4]])}")
 print(f"-AUPR score_mean:{np.mean(np.array(results)[:, [5]])}")
 print(f"-AUPR score_std:{np.std(np.array(results)[:, [5]])}")
 
-# 运行计时部分
+
 time_end = time.time()
 print(f"total running time: {(time_end - time_start) / 60} minites")
